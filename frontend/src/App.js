@@ -3,9 +3,14 @@ import Poruka from './components/Poruka'
 import axios from 'axios'
 
 const App = (props) => {
-  const [ poruke, postaviPoruke] = useState(props.poruke)
+  const [ poruke, postaviPoruke] = useState([])
   const [ unosPoruke, postaviUnos] = useState('unesi poruku...')
   const [ ispisSve, postaviIspis] = useState(true)
+
+  useEffect( () => {
+    axios.get("http://localhost:3001/api/poruke")
+    .then(res => postaviPoruke(res.data))
+  }, [])
 
   const porukeZaIspis = ispisSve
   ? poruke
@@ -15,13 +20,16 @@ const App = (props) => {
     e.preventDefault()
     console.log('Klik', e.target)
     const noviObjekt = {
-      id: poruke.length + 1,
       sadrzaj: unosPoruke,
-      datum: new Date().toISOString(),
+      datum: new Date(),
       vazno: Math.random() > 0.5      
     }
-    postaviPoruke(poruke.concat(noviObjekt))
-    postaviUnos('')
+    axios
+      .post('http://localhost:3001/api/poruke', noviObjekt)
+      .then(response => {
+        postaviPoruke(poruke.concat(res.data))
+        postaviUnos('')
+      })
   }
 
   const promjenaUnosa = (e) => {
